@@ -79,19 +79,16 @@ class AudioRef {
 
         // Searches for inactive audio in pool and plays if an empty one is found
         for(let i = 0; i < this.pool.length; i++) {
-            if(this.path[i].isPlaying) continue;
+            if(this.pool[i].isPlaying) continue;
 
-            //let audio = new Audio(this.path);
-            let audio = this.audio.cloneNode(true);
+            let audio = this.pool[i];
             audio.volume = this.volume;
             audio.play();
-            this.pool.push(audio);
+            
             return;
         }
 
         // If all audio in pool is playing, create a new audio and add that to the pool
-
-        //let audio = new Audio(this.path);
         let audio = this.audio.cloneNode(true);
         audio.volume = this.volume;
         audio.play();
