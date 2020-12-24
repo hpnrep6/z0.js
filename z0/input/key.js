@@ -6,6 +6,8 @@ export function isKeyDown(key) {
 
 document.onkeydown = (e) => {
     let key = e.key.toLowerCase();
+    
+    // If key already in array, don't try to add it again
     if(keysDown.indexOf(key) !== -1) return;
 
     keysDown.push(e.key.toLowerCase())
@@ -14,7 +16,7 @@ document.onkeydown = (e) => {
 document.onkeyup = (e) => {
     let key = e.key.toLowerCase();
     
-    // Using Array.indexOf would be more optimal, but does not resolve duplicate key indexes
+    // Using Array.indexOf() would be more optimal, but does not resolve duplicate key indexes
     for(let i = 0, n = keysDown.length; i < n; i++) {
         if(key == keysDown[i]) {
             keysDown.splice(i, 1);
