@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 import * as MOUSE from './input/mouse.js';
 import * as VAR from './var.js';
 import { GLCanvas } from './graphics/glcanvas.js';
