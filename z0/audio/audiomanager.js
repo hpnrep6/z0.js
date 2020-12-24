@@ -84,7 +84,6 @@ class AudioRef {
             let audio = this.pool[i];
             audio.volume = this.volume;
             audio.play();
-            console.log(i)
             return;
         }
 
