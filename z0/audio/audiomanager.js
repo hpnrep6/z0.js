@@ -79,12 +79,12 @@ class AudioRef {
 
         // Searches for inactive audio in pool and plays if an empty one is found
         for(let i = 0; i < this.pool.length; i++) {
-            if(this.pool[i].isPlaying) continue;
+            if(AudioRef.isPlaying(this.pool[i])) continue;
 
             let audio = this.pool[i];
             audio.volume = this.volume;
             audio.play();
-            
+            console.log(i)
             return;
         }
 
