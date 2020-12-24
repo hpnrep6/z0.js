@@ -12,7 +12,7 @@ See [Cloud Tower Defence](https://github.com/hpnrep6/Cloud-Tower_Defence) for a 
 - z0/graphics: Manages the rendering order and contains the WebGL "renderers" for drawing the sprites
 - z0/input: Input wrappers to simplify input management in a game
 - z0/math: Unused math classes
-- z0/physics: Manages collisions 
+- z0/physics: Manages collisions and collision layers
 - z0/primitives: Unused primitive classes
 - z0/tree: Where most of the update loop is contained, and manages the locations of the sprites
 - z0/utils: General utils
