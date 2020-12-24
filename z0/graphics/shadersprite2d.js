@@ -36,7 +36,7 @@ export class ShaderSprite2DRenderer {
         this.bindUniforms(gl, this.program);
     }
 
-    bindUniforms(gl) {
+    bindUniforms(gl, program) {
 
     }
 
@@ -55,6 +55,10 @@ export class ShaderSprite2DRenderer {
     getUniformLocation(name) {
         return this.gl.getUniformLocation(this.program. name);
     }
+    
+    getULoc(name) {
+    	return getUniformLocation(name);
+    }
 
     // Default shaders
     vShader = `
@@ -64,12 +68,10 @@ export class ShaderSprite2DRenderer {
         attribute vec2 aVertPos;
         attribute vec2 aTexCoord;
 
-        uniform vec2 uRes;
+        uniform mediump vec2 uRes;
     
         varying vec2 vTexCoord;
         varying float vAlpha;
-
-        varying vec2 vRes;
         
         void main() {
             vec2 scaledPos = (aVertPos * aTransformation1.yz) / 2.0;
@@ -87,7 +89,6 @@ export class ShaderSprite2DRenderer {
 
             vAlpha = aTransformation1.x;
             vTexCoord = aTexCoord;
-            vRes = uRes;
         }
     `;
     
@@ -101,10 +102,8 @@ export class ShaderSprite2DRenderer {
 
         uniform mediump float uTime;
         uniform mediump float uTimeDelta;
-        varying vec2 uRes;
 
         void main() {
-
             gl_FragColor = vec4(cos(uTime / 100.), 0, 0, 1);
         }
     `;
