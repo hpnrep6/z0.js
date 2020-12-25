@@ -60,10 +60,10 @@ export class ShaderSprite2DRenderer {
 
         this.initInfo(gl, canvas);
 
-        this.bindUniforms(gl, this.program);
+        this.getUniforms(gl, this.program);
     }
 
-    bindUniforms(gl, program) {
+    getUniforms(gl, program) {
 
     }
 
@@ -80,7 +80,7 @@ export class ShaderSprite2DRenderer {
     }
 
     getUniformLocation(name) {
-        return this.gl.getUniformLocation(this.program. name);
+        return this.gl.getUniformLocation(this.program, name);
     }
     
     getULoc(name) {
