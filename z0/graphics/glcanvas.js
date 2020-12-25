@@ -40,18 +40,15 @@ export class GLCanvas {
 
         this.gl.clearColor(this.bkgColour.r, this.bkgColour.g, this.bkgColour.b, this.bkgColour.a);
 
-        //this.gl.useProgram(Sprite2DRenderer.info.program);
-
         // Loop through and draw each sprite layer starting from index 0 to index n
-        for(var i = 0, n = this.sprites.length; i < n; i++) {
+        for(var i = 0; i < this.sprites.length; i++) {
             if(this.sprites[i] === undefined) continue;
 
-            if(this.sprites[i][0] === undefined) continue;
+            for(let j = 0; j < this.sprites[i].length; j++) {
+                if(this.sprites[i][j] === undefined) continue;
 
-            this.sprites[i][0][0]._draw(this.gl, this.sprites[i], this.lastShader);
-            
-            //Sprite2DRenderer.draw(this.gl, this.sprites[i]);
-
+                this.sprites[i][j][0]._draw(this.gl, this.sprites[i][j], this.lastShader);
+           }
         }
     }
 
@@ -62,12 +59,12 @@ export class GLCanvas {
         | [z]     | [x]      | [y]     |
         | zLoc    | textures | sprites |
         */
-   
+
         let z = sprite.zLoc;
 
         // If z position doesnt already exist, create a new array 
-        if(this.sprites[z] === undefined) {
-            this._createNewSublayer(sprite, z);
+        if(this.sprites[z] === undefined) { 
+            this._createNewSublayer(sprite, z); 
             return;
         }
 
