@@ -59,12 +59,6 @@ export class ShaderSprite2DRenderer {
         this.MAX_CYCLES = initialVerticies;
 
         this.initInfo(gl, canvas);
-
-        this.getUniforms(gl, this.program);
-    }
-
-    getUniforms(gl, program) {
-
     }
 
     setUniforms(gl) {
@@ -79,12 +73,16 @@ export class ShaderSprite2DRenderer {
         this.gl.uniform2fv(reference, [valueX, valueY]);
     }
 
-    getUniformLocation(name) {
-        return this.gl.getUniformLocation(this.program, name);
+    setVec3(reference, valueX, valueY, valueZ) {
+        this.gl.uniform3fv(reference, [valueX, valueY, valueZ]);
+    }
+
+    getUniformLocation(name, program = this.program) {
+        return this.gl.getUniformLocation(program, name);
     }
     
     getULoc(name) {
-    	return getUniformLocation(name);
+    	return this.getUniformLocation(name);
     }
 
     static appendDefault(shader) {
@@ -255,6 +253,8 @@ export class ShaderSprite2DRenderer {
         // Don't change shader if previous shader used is the same one as the current shader, because shader changes are relatively expensive
         if(lastShader.shader !== this.program) 
             gl.useProgram(this.program);
+
+        this.gl = gl;
 
         lastShader.shader = this.program;
 
