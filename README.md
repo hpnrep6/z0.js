@@ -4,7 +4,8 @@ A 2D Javascript game engine/framework with sprite (textured quad) rendering, sce
 
 ## Examples
 
-See [Cloud Tower Defence](https://github.com/hpnrep6/Cloud-Tower_Defence) for a game made using this engine/framework.
+- [Cloud Tower Defence](https://github.com/hpnrep6/Cloud-Tower_Defence) 
+- [Mandelbrot Fractal Explorer](https://github.com/hpnrep6/MandelbrotFractalExplorer)
 
 ## File Structure
 
