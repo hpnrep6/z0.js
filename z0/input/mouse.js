@@ -55,6 +55,10 @@ document.onmouseup = () => {
     down = false;
 }
 
+document.ondragend = () => {
+    down = false;
+}
+
 document.onmousemove = (e) => {
     coordOffsetX = canvas.getBoundingClientRect().x;
     coordOffsetY = canvas.getBoundingClientRect().y;
