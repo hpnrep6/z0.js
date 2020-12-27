@@ -8,10 +8,6 @@ A 2D Javascript game engine/framework with sprite (textured quad) rendering, sce
 - [Cloud Tower Defence](https://github.com/hpnrep6/Cloud-Tower_Defence) 
 - [Mandelbrot Fractal Explorer](https://github.com/hpnrep6/MandelbrotFractalExplorer)
 
-### Code
-
-Coming soon? Maybe?
-
 ## File Structure
 
 - z0/audio: Scripts to manage and play audio
