@@ -29,9 +29,9 @@ export class ShaderSprite2D extends Sprite {
 
         this.sprite = ShaderSprite2D.textureCoords;
 
-        this.glCanvas = z0.getTree().getActiveScene().getGLCanvas();
+        this.glcanvas = this.getScene().getGLCanvas();
 
-        this.glCanvas.addSprite(this);
+        this.glcanvas.addSprite(this);
     }
 
     _draw(gl, sprites, lastShader) {
@@ -114,6 +114,8 @@ export class ShaderSprite2DRenderer {
     
         varying vec2 vTexCoord;
         varying float vAlpha;
+        varying vec3 vTransform0;
+        varying vec2 vTransform1;
         
         void main() {
             vec2 scaledPos = (aVertPos * aTransformation1.yz) / 2.0;
@@ -131,6 +133,9 @@ export class ShaderSprite2DRenderer {
 
             vAlpha = aTransformation1.x;
             vTexCoord = aTexCoord;
+
+            vTransform0 = aTransformation0;
+            vTransform1 = aTransformation1.yz;
         }
     `;
     
