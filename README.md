@@ -6,6 +6,7 @@ A 2D Javascript game engine/framework with sprite (textured quad) rendering, sce
 
 ### Projects
 - [Cloud Tower Defence](https://github.com/hpnrep6/Cloud-Tower_Defence) 
+- [Fungicide](https://hpnrep6.itch.io/fungicide)
 - [Mandelbrot Fractal Explorer](https://github.com/hpnrep6/MandelbrotFractalExplorer)
 
 ## File Structure
