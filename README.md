@@ -12,7 +12,7 @@ A 2D Javascript game framework with sprite (textured quad) rendering, scene mang
 ## File Structure
 
 - z0/audio: Scripts to manage and play audio
-- z0/graphics: Manages the rendering order and contains the WebGL "renderers" for drawing the sprites
+- z0/graphics: Manages the draw order and contains the WebGL "renderers" for drawing the sprites
 - z0/input: Input wrappers to simplify input management in a game
 - z0/math: Unused math classes
 - z0/physics: Manages collisions and collision layers
