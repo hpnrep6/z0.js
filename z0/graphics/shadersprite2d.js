@@ -18,7 +18,7 @@ export class ShaderSprite2D extends Sprite {
 
     texture;
     renderer;
-
+    
     constructor(parent, renderer, xLoc, yLoc, xSize, ySize, rot = 0, zLoc = 0, spritesheet = null) {
 
         super(parent, xLoc, yLoc, xSize, ySize, rot, zLoc);
@@ -254,7 +254,8 @@ export class ShaderSprite2DRenderer {
         this.initialised = true;
     }
 
-    draw(gl, sprites, lastShader) { 
+    draw(gl, renderbatch, lastShader) {
+        let sprites = renderbatch.sprites;
         // Don't change shader if previous shader used is the same one as the current shader, because shader changes are relatively expensive
         if(lastShader.shader !== this.program) 
             gl.useProgram(this.program);

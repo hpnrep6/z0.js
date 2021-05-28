@@ -2,6 +2,7 @@ import { Sprite2DRenderer } from './sprite2d.js';
 import { Colour } from './colour/colour.js';
 import * as VAR from '../var.js';
 import { ShaderSprite2DRenderer } from './shadersprite2d.js';
+import { RenderBatch } from './renderbatch.js';
 
 export class GLCanvas {
 
@@ -47,7 +48,7 @@ export class GLCanvas {
             for(let j = 0; j < this.sprites[i].length; j++) {
                 if(this.sprites[i][j] === undefined) continue;
 
-                this.sprites[i][j][0]._draw(this.gl, this.sprites[i][j], this.lastShader);
+                this.sprites[i][j].sprites[0]._draw(this.gl, this.sprites[i][j], this.lastShader);
            }
         }
     }
@@ -73,26 +74,27 @@ export class GLCanvas {
         // already exists.
         let n = this.sprites[z].length;
         for(let i = 0; i < n; i++) {
-            if(sprite.texture === this.sprites[z][i][0].texture) {
+            if(sprite.texture === this.sprites[z][i].texture) {
 
                 // Don't add if the number of sprites in this layer has exceeded the maximum allowed sprites per layer
-                if(this.sprites[z][i].length >= GLCanvas.MAX_SPRITES) continue;
+                if(this.sprites[z][i].sprites.length >= GLCanvas.MAX_SPRITES) continue;
 
                 // Add sprite into sprite array at [zLocition][TextureType]
-                this.sprites[z][i].push(sprite) - 1; 
+                this.sprites[z][i].add(sprite);
+
                 return;
             }
         }
 
         //  If none found, create a new array in the specified z layer.
-        this.sprites[z].push([]);
-        this.sprites[z][n].push(sprite);
+        this.sprites[z].push(new RenderBatch(sprite.texture));
+        this.sprites[z][n].add(sprite);
     }
 
     _createNewSublayer(sprite, z) {
             this.sprites[z] = [];
-            this.sprites[z][0] = [];
-            this.sprites[z][0].push(sprite);
+            this.sprites[z][0] = new RenderBatch(sprite.texture);
+            this.sprites[z][0].add(sprite);
     }
 
     removeSprite(sprite) {
@@ -100,30 +102,19 @@ export class GLCanvas {
 
             if(this.sprites[sprite.zLoc][i] === undefined) continue;
 
-            let index = this.sprites[sprite.zLoc][i].indexOf(sprite);
+            let index = this.sprites[sprite.zLoc][i].sprites.indexOf(sprite);
 
             if(index != -1) {
-                this.sprites[sprite.zLoc][i].splice(index, 1);
+                this.sprites[sprite.zLoc][i].sprites.splice(index, 1);
 
-                if(this.sprites[sprite.zLoc][i].length === 0) {
+                if(this.sprites[sprite.zLoc][i].sprites.length === 0) {
                     this.sprites[sprite.zLoc].splice(i, 1);
                 }
 
+                sprite._batch = undefined;
+
                 return;
             }
-
-            // for(let j = 0; j < this.sprites[sprite.zLoc][i].length; j++) {
-            //     if(this.sprites[sprite.zLoc][i][j] === sprite) {
-            //         this.sprites[sprite.zLoc][i].splice(j, 1);
-
-            //         // If this sprite was the last one in this texture section, remove the texture section
-            //         if(this.sprites[sprite.zLoc][i].length === 0) {
-            //             this.sprites[sprite.zLoc].splice(i, 1);
-            //         }
-
-            //         return;
-            //     }
-            // }
         }
     }
 

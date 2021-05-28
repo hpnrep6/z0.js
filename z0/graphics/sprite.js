@@ -2,6 +2,8 @@ import * as MODULE from '../tree/module.js';
 import { angleTo } from '../math/math2d.js';
 
 export class Sprite extends MODULE.Module {
+    _batch;
+
     constructor(parent, xLoc, yLoc, xSize, ySize, rot, zLoc, alpha = 1) {
         super(parent, xLoc, yLoc, rot);
 
@@ -26,6 +28,7 @@ export class Sprite extends MODULE.Module {
     setLocCorner(x, y) {
         this.xLoc = x + this.xSizeActual;
         this.yLoc = y + this.ySizeActual;
+        this._batch.updateLoc = true;
     }
 
     /**
@@ -42,6 +45,9 @@ export class Sprite extends MODULE.Module {
             this.xSize = x;
             this.ySize = y;
         }
+
+        if(this._batch)
+            this._batch.updateSize = true;
     }
 
     /**
@@ -78,6 +84,8 @@ export class Sprite extends MODULE.Module {
             this.xSize = 0;
             this.ySize = 0;
         }
+
+        this._batch.updateSize = true;
     }
 
     setZ(z) {
@@ -88,6 +96,7 @@ export class Sprite extends MODULE.Module {
 
     setAlpha(alpha) {
         this.alpha = alpha;
+        this._batch.updateAlpha = true;
     }
 
     getZ() {
@@ -113,6 +122,14 @@ export class Sprite extends MODULE.Module {
     _destroy() {
         super._destroy();
         this.glcanvas.removeSprite(this);
+    }
+
+    _updateChildrenLoc() {
+        // Indicate to the renderer to update the location
+        if(this._batch)
+            this._batch.updateLoc = true;
+
+        super._updateChildrenLoc();
     }
 
 }

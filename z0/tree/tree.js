@@ -42,6 +42,10 @@ export class SceneTree {
         return this.active;
     }
 
+    getActiveScene() {
+        return this.active;
+    }
+
     addScene(scene) {
         return this.scenes.push(scene) - 1;
     }
