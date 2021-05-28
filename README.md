@@ -1,4 +1,4 @@
-## Description
+## z0.js
 
 A 2D Javascript game framework with sprite (textured quad) rendering, scene mangement, collision detection, audio pooling, customisable shaders, and more.
 
