@@ -2,6 +2,7 @@ import * as GLUTILS from '../utils/glutils.js';
 import * as SPRITE from './sprite.js';
 import * as TEXTUREMANAGER from './texturemanager.js';
 import { SpriteSheet } from './spritesheet.js';
+import { RenderBatch } from './renderbatch.js';
 
 // Sprite with batch rendering enabled
 export class Sprite2D extends SPRITE.Sprite {
@@ -280,7 +281,8 @@ export class Sprite2DRenderer {
 
     static componentsPerTriangle = 9; // 3 transformation values per vertex, 3 vertices per triangle
 
-    static draw(gl, sprites, lastShader) {
+    static draw(gl, renderbatch, lastShader) {
+        let sprites = renderbatch.sprites;
         // Don't change shader if previous shader used is the same one as the current shader, because shader changes are relatively expensive
         if(lastShader.shader !== Sprite2DRenderer.info.program) 
             gl.useProgram(Sprite2DRenderer.info.program);

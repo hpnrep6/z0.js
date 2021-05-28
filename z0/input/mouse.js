@@ -1,6 +1,7 @@
 export var mX = 0;
 export var mY = 0;
 export var down = false;
+export var scroll = 0;
 
 var canvas;
 
@@ -28,12 +29,20 @@ export function getX() {
     return mX;
 }
 
+export function getMouseX() {
+    return mX;
+}
+
 /**
  * Get y position of mouse
  *
  * @return {number} Y position
  */
 export function getY() {
+    return mY;
+}
+
+export function getMouseY() {
     return mY;
 }
 
@@ -46,16 +55,20 @@ export function isDown() {
     return down;
 }
 
+/**
+ * Gets the direction of scroll
+ * 
+ * @return {number} The direction of the scroll. Either 1, -1, or 0.
+ */
+export function getScroll() {
+    return scroll;
+}
 
 document.onmousedown = () => {
     down = true;
 }
 
 document.onmouseup = () => {
-    down = false;
-}
-
-document.ondragend = () => {
     down = false;
 }
 
@@ -66,3 +79,18 @@ document.onmousemove = (e) => {
     mX = e.clientX - coordOffsetX;
     mY = e.clientY - coordOffsetY;
 }
+
+var timeout;
+
+window.addEventListener('wheel', (e) => {
+    if(e.deltaY < 0) {
+        scroll = -1;
+    } else if (e.deltaY > 0) {
+        scroll = 1;
+    }
+
+    clearTimeout(timeout);
+    timeout = setTimeout( () => {
+        scroll = 0;   
+    }, 75);
+});
