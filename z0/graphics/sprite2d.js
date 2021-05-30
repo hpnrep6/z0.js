@@ -70,6 +70,8 @@ export class Sprite2D extends SPRITE.Sprite {
                 this.sprite = this.spritesheet.getFrame(this.spriteIndex);
             break;
         }
+
+        this._batch.updateTexture = true;
     }
 
     reflectV() {
@@ -83,6 +85,8 @@ export class Sprite2D extends SPRITE.Sprite {
                 this.sprite = this.spritesheet.getFrame(this.spriteIndex);
             break;
         }
+
+        this._batch.updateTexture = true;
     }
 
     setSpriteSheet(spriteSheet) {
@@ -93,6 +97,7 @@ export class Sprite2D extends SPRITE.Sprite {
     setSprite(index) {
         this.spriteIndex = index;
         this.sprite = this.spritesheet.getFrame(index);
+        this._batch.updateTexture = true;
     }
 
     setSpriteLoop(index) {
@@ -105,6 +110,8 @@ export class Sprite2D extends SPRITE.Sprite {
         this.sprite = this.spritesheet.getFrame(index);
 
         this.spriteIndex = index;
+
+        this._batch.updateTexture = true;
     }
 
     // Sets the texture coordinates for the renderer
@@ -196,15 +203,15 @@ export class Sprite2DRenderer {
         // Only init once 
         if(this.initialised) return;
 
-        this.info.program = GLUTILS.createShaderProgram(gl, this.vShader, this.fShader);
+        this.program = GLUTILS.createShaderProgram(gl, this.vShader, this.fShader);
 
-        this.info.aLoc.aTransform0 = this.info.gl.getAttribLocation(this.info.program, 'aTransformation0');
-        this.info.aLoc.aTransform1 = this.info.gl.getAttribLocation(this.info.program, 'aTransformation1');
-        this.info.aLoc.aVertPos = this.info.gl.getAttribLocation(this.info.program, 'aVertPos');
-        this.info.aLoc.aTexCoord = this.info.gl.getAttribLocation(this.info.program, 'aTexCoord');
+        this.info.aLoc.aTransform0 = this.info.gl.getAttribLocation(this.program, 'aTransformation0');
+        this.info.aLoc.aTransform1 = this.info.gl.getAttribLocation(this.program, 'aTransformation1');
+        this.info.aLoc.aVertPos = this.info.gl.getAttribLocation(this.program, 'aVertPos');
+        this.info.aLoc.aTexCoord = this.info.gl.getAttribLocation(this.program, 'aTexCoord');
 
-        this.info.uLoc.sampler = this.info.gl.getUniformLocation(this.info.program, 'uSampler');
-        this.info.uLoc.uRes = this.info.gl.getUniformLocation(this.info.program, 'uRes');
+        this.info.uLoc.sampler = this.info.gl.getUniformLocation(this.program, 'uSampler');
+        this.info.uLoc.uRes = this.info.gl.getUniformLocation(this.program, 'uRes');
 
         // Init vertex buffers
         this.glBuffers.vboID = gl.createBuffer();
@@ -242,9 +249,10 @@ export class Sprite2DRenderer {
         texVertices: null
     }
 
+    static program;
+
     static info = {
         gl: null,
-        program: null,
         canvas: null,
         aLoc: {
             aVertPos: null,
@@ -284,10 +292,10 @@ export class Sprite2DRenderer {
     static draw(gl, renderbatch, lastShader) {
         let sprites = renderbatch.sprites;
         // Don't change shader if previous shader used is the same one as the current shader, because shader changes are relatively expensive
-        if(lastShader.shader !== Sprite2DRenderer.info.program) 
-            gl.useProgram(Sprite2DRenderer.info.program);
+        if(lastShader.shader !== Sprite2DRenderer.program) 
+            gl.useProgram(Sprite2DRenderer.program);
 
-        lastShader.shader = Sprite2DRenderer.info.program;
+        lastShader.shader = Sprite2DRenderer.program;
 
         let currentBatch = sprites;
 
@@ -300,88 +308,91 @@ export class Sprite2DRenderer {
         // per quad: 2 * 6 = 12
         let texCoords = new Float32Array(currentBatch.length * 12);
 
-        for(let i = 0, n = currentBatch.length; i < n; i++) {
-            for(let j = 0; j < 2; j++) {
-                let offset = i * 18 + j * 9;
+        renderbatch.updateBuffers(gl);
 
-                /*
-                    Transformation vector3 layout:
-                        1:      2:      3:
-                    0:  xPos    yPos    rot
-                    1:  alpha   xSize*  ySize*
+        // if(false){
+        //     for(let i = 0, n = currentBatch.length; i < n; i++) {
+        //         for(let j = 0; j < 2; j++) {
+        //             let offset = i * 18 + j * 9;
 
-                    *xSize and ySize are the dimensions of the quad
-                */
+        //             /*
+        //                 Transformation vector3 layout:
+        //                     1:      2:      3:
+        //                 0:  xPos    yPos    rot
+        //                 1:  alpha   xSize*  ySize*
 
-                transforms0[offset    ] = currentBatch[i].xLoc;
-                transforms0[offset + 1] = currentBatch[i].yLoc;
-                transforms0[offset + 2] = currentBatch[i].rot;
+        //                 *xSize and ySize are the dimensions of the quad
+        //             */
 
-                transforms0[offset + 3] = currentBatch[i].xLoc;
-                transforms0[offset + 4] = currentBatch[i].yLoc;
-                transforms0[offset + 5] = currentBatch[i].rot;
+        //             transforms0[offset    ] = currentBatch[i].xLoc;
+        //             transforms0[offset + 1] = currentBatch[i].yLoc;
+        //             transforms0[offset + 2] = currentBatch[i].rot;
 
-                transforms0[offset + 6] = currentBatch[i].xLoc;
-                transforms0[offset + 7] = currentBatch[i].yLoc;
-                transforms0[offset + 8] = currentBatch[i].rot;
+        //             transforms0[offset + 3] = currentBatch[i].xLoc;
+        //             transforms0[offset + 4] = currentBatch[i].yLoc;
+        //             transforms0[offset + 5] = currentBatch[i].rot;
 
-                transforms1[offset    ] = currentBatch[i].alpha;
-                transforms1[offset + 1] = currentBatch[i].xSize;
-                transforms1[offset + 2] = currentBatch[i].ySize;
+        //             transforms0[offset + 6] = currentBatch[i].xLoc;
+        //             transforms0[offset + 7] = currentBatch[i].yLoc;
+        //             transforms0[offset + 8] = currentBatch[i].rot;
 
-                transforms1[offset + 3] = currentBatch[i].alpha;
-                transforms1[offset + 4] = currentBatch[i].xSize;
-                transforms1[offset + 5] = currentBatch[i].ySize;
+        //             transforms1[offset    ] = currentBatch[i].alpha;
+        //             transforms1[offset + 1] = currentBatch[i].xSize;
+        //             transforms1[offset + 2] = currentBatch[i].ySize;
 
-                transforms1[offset + 6] = currentBatch[i].alpha;
-                transforms1[offset + 7] = currentBatch[i].xSize;
-                transforms1[offset + 8] = currentBatch[i].ySize;
-            }    
+        //             transforms1[offset + 3] = currentBatch[i].alpha;
+        //             transforms1[offset + 4] = currentBatch[i].xSize;
+        //             transforms1[offset + 5] = currentBatch[i].ySize;
+
+        //             transforms1[offset + 6] = currentBatch[i].alpha;
+        //             transforms1[offset + 7] = currentBatch[i].xSize;
+        //             transforms1[offset + 8] = currentBatch[i].ySize;
+        //         }    
+                
+        //         let offset = i * 12;
+
+        //         texCoords[offset     ] = currentBatch[i].sprite[0];
+        //         texCoords[offset + 1 ] = currentBatch[i].sprite[1];
+        //         texCoords[offset + 2 ] = currentBatch[i].sprite[2];
+        //         texCoords[offset + 3 ] = currentBatch[i].sprite[3];
+        //         texCoords[offset + 4 ] = currentBatch[i].sprite[4];
+        //         texCoords[offset + 5 ] = currentBatch[i].sprite[5];
+        //         texCoords[offset + 6 ] = currentBatch[i].sprite[6];
+        //         texCoords[offset + 7 ] = currentBatch[i].sprite[7];
+        //         texCoords[offset + 8 ] = currentBatch[i].sprite[8];
+        //         texCoords[offset + 9 ] = currentBatch[i].sprite[9];
+        //         texCoords[offset + 10] = currentBatch[i].sprite[10];
+        //         texCoords[offset + 11] = currentBatch[i].sprite[11];
+        //     }
+
+        //     // Set buffers for the batch
+        //     gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.vboID);
+        //     gl.enableVertexAttribArray(this.info.aLoc.aVertPos);
+        //     gl.vertexAttribPointer(this.info.aLoc.aVertPos, 2, gl.FLOAT, false, 0, 0);
+
+
+        //     gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.texID);
+        //     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW)  
+
+        //     gl.enableVertexAttribArray(this.info.aLoc.aTexCoord);
+        //     gl.vertexAttribPointer(this.info.aLoc.aTexCoord, 2, gl.FLOAT, false, 0, 0);
+
             
-            let offset = i * 12;
+        //     gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.transform0ID);
+        //     gl.bufferData(gl.ARRAY_BUFFER, transforms0, gl.STATIC_DRAW)
 
-            texCoords[offset     ] = currentBatch[i].sprite[0];
-            texCoords[offset + 1 ] = currentBatch[i].sprite[1];
-            texCoords[offset + 2 ] = currentBatch[i].sprite[2];
-            texCoords[offset + 3 ] = currentBatch[i].sprite[3];
-            texCoords[offset + 4 ] = currentBatch[i].sprite[4];
-            texCoords[offset + 5 ] = currentBatch[i].sprite[5];
-            texCoords[offset + 6 ] = currentBatch[i].sprite[6];
-            texCoords[offset + 7 ] = currentBatch[i].sprite[7];
-            texCoords[offset + 8 ] = currentBatch[i].sprite[8];
-            texCoords[offset + 9 ] = currentBatch[i].sprite[9];
-            texCoords[offset + 10] = currentBatch[i].sprite[10];
-            texCoords[offset + 11] = currentBatch[i].sprite[11];
-        }
-
-        // Set buffers for the batch
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.vboID);
-        gl.enableVertexAttribArray(this.info.aLoc.aVertPos);
-        gl.vertexAttribPointer(this.info.aLoc.aVertPos, 2, gl.FLOAT, false, 0, 0);
-
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.texID);
-        gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW)  
-
-        gl.enableVertexAttribArray(this.info.aLoc.aTexCoord);
-        gl.vertexAttribPointer(this.info.aLoc.aTexCoord, 2, gl.FLOAT, false, 0, 0);
-
-        
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.transform0ID);
-        gl.bufferData(gl.ARRAY_BUFFER, transforms0, gl.STATIC_DRAW)
-
-        gl.enableVertexAttribArray(this.info.aLoc.aTransform0);
-        gl.vertexAttribPointer(this.info.aLoc.aTransform0, 3, gl.FLOAT, false, 0, 0);
+        //     gl.enableVertexAttribArray(this.info.aLoc.aTransform0);
+        //     gl.vertexAttribPointer(this.info.aLoc.aTransform0, 3, gl.FLOAT, false, 0, 0);
 
 
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.transform1ID);
-        gl.bufferData(gl.ARRAY_BUFFER, transforms1, gl.STATIC_DRAW)
+        //     gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.transform1ID);
+        //     gl.bufferData(gl.ARRAY_BUFFER, transforms1, gl.STATIC_DRAW)
 
-        gl.enableVertexAttribArray(this.info.aLoc.aTransform1);
-        gl.vertexAttribPointer(this.info.aLoc.aTransform1, 3, gl.FLOAT, false, 0, 0);
-
-
+        //     gl.enableVertexAttribArray(this.info.aLoc.aTransform1);
+        //     gl.vertexAttribPointer(this.info.aLoc.aTransform1, 3, gl.FLOAT, false, 0, 0);
+        // }
+       
         
         // Bind textures and canvas resolution for the batch
 
