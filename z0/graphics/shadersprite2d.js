@@ -1,6 +1,7 @@
 import { Sprite } from './sprite.js';
 import * as z0 from '../z0.js';
 import * as GLUTILS from '../utils/glutils.js';
+import * as VAR from '../var.js';
 import { Sprite2D } from './sprite2d.js';
 
 export class ShaderSprite2D extends Sprite {
@@ -41,6 +42,7 @@ export class ShaderSprite2D extends Sprite {
 
 export class ShaderSprite2DRenderer {
     static _idCount = 0;
+    vao;
     _id;
     // Number of cycles to create vertex position array. Each cycle increases previous count by a power of two, starting from 12 vertex locations (2 per vertex, 3 verticies per triangle, 2 triangles per quad)
     MAX_CYCLES = 4;
@@ -58,6 +60,7 @@ export class ShaderSprite2DRenderer {
 
         this.MAX_CYCLES = initialVerticies;
 
+        this.vao = VAR.gl.createVertexArray();
         this.initInfo(gl, canvas);
     }
 
@@ -255,6 +258,7 @@ export class ShaderSprite2DRenderer {
     }
 
     draw(gl, renderbatch, lastShader) {
+        gl.bindVertexArray(this.vao)
         let sprites = renderbatch.sprites;
         // Don't change shader if previous shader used is the same one as the current shader, because shader changes are relatively expensive
         if(lastShader.shader !== this.program) 

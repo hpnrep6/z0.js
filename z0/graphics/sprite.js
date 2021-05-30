@@ -28,6 +28,7 @@ export class Sprite extends MODULE.Module {
     setLocCorner(x, y) {
         this.xLoc = x + this.xSizeActual;
         this.yLoc = y + this.ySizeActual;
+
         this._batch.updateLoc = true;
     }
 
@@ -96,7 +97,43 @@ export class Sprite extends MODULE.Module {
 
     setAlpha(alpha) {
         this.alpha = alpha;
+        
         this._batch.updateAlpha = true;
+    }
+
+    setLoc(xLoc, yLoc) {
+        super.setLoc(xLoc, yLoc)
+
+        if(this._batch)
+            this._batch.updateLoc = true;
+    }
+
+    setX(xLoc) {
+        super.setX(xLoc)
+
+        if(this._batch)
+            this._batch.updateLoc = true;
+    }
+
+    setY(yLoc) {
+        super.setY(yLoc)
+
+        if(this._batch)
+            this._batch.updateLoc = true;
+    }
+
+    setOff(xOff, yOff) {
+        super.setOff(xOff, yOff);
+
+        if(this._batch)
+            this._batch.updateLoc = true;
+    }
+
+    setRot(rot) {
+        super.setRot(rot);
+
+        if(this._batch)
+            this._batch.updateLoc = true;
     }
 
     getZ() {
@@ -123,13 +160,4 @@ export class Sprite extends MODULE.Module {
         super._destroy();
         this.glcanvas.removeSprite(this);
     }
-
-    _updateChildrenLoc() {
-        // Indicate to the renderer to update the location
-        if(this._batch)
-            this._batch.updateLoc = true;
-
-        super._updateChildrenLoc();
-    }
-
 }
