@@ -310,7 +310,7 @@ export class Sprite2DRenderer {
 
         renderbatch.updateBuffers(gl);
 
-        // if(false){
+        // if(true){
         //     for(let i = 0, n = currentBatch.length; i < n; i++) {
         //         for(let j = 0; j < 2; j++) {
         //             let offset = i * 18 + j * 9;

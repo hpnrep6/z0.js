@@ -233,7 +233,7 @@ export class RenderBatch {
 
         } else {
 
-        if(this.updateLoc || true) {
+        if(this.updateLoc) {
             this.arrays.transform = new Float32Array(RenderBatch.TRANSFORM_LENGTH * this.sprites.length);
 
             for(let i = 0; i < this.sprites.length; i++) {
