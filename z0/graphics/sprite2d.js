@@ -146,7 +146,7 @@ export class Sprite2D extends SPRITE.Sprite {
 
 export class Sprite2DRenderer {
     // Number of cycles to create vertex position array. Each cycle increases previous count by a power of two, starting from 12 vertex locations (2 per vertex, 3 verticies per triangle, 2 triangles per quad)
-    static MAX_CYCLES = 10;
+    static MAX_CYCLES = 11;
 
     static vShader = `
         attribute vec3 aTransformation0;
@@ -213,27 +213,6 @@ export class Sprite2DRenderer {
         this.info.uLoc.sampler = this.info.gl.getUniformLocation(this.program, 'uSampler');
         this.info.uLoc.uRes = this.info.gl.getUniformLocation(this.program, 'uRes');
 
-        // Init vertex buffers
-        this.glBuffers.vboID = gl.createBuffer();
-        this.glBuffers.texID = gl.createBuffer();
-
-        // Init transformation buffers
-        this.glBuffers.transform0ID = gl.createBuffer();
-        this.glBuffers.transform1ID = gl.createBuffer();
-
-        let vertexBufferInArray = [];
-        vertexBufferInArray = vertexBufferInArray.concat(this.vertices);
-
-        for(let i = 0; i < this.MAX_CYCLES; i++) {
-            vertexBufferInArray = vertexBufferInArray.concat(vertexBufferInArray);
-        }
-
-
-        this.glBuffers.vertices = new Float32Array(vertexBufferInArray);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.vboID);
-        gl.bufferData(gl.ARRAY_BUFFER, this.glBuffers.vertices, gl.STATIC_DRAW)
-
         this.initialised = true;
     }
 
@@ -290,115 +269,19 @@ export class Sprite2DRenderer {
     static componentsPerTriangle = 9; // 3 transformation values per vertex, 3 vertices per triangle
 
     static draw(gl, renderbatch, lastShader) {
-        let sprites = renderbatch.sprites;
         // Don't change shader if previous shader used is the same one as the current shader, because shader changes are relatively expensive
         if(lastShader.shader !== Sprite2DRenderer.program) 
             gl.useProgram(Sprite2DRenderer.program);
 
         lastShader.shader = Sprite2DRenderer.program;
 
-        let currentBatch = sprites;
-
-        // 6 transform values per vertice, split into two vec3s
-        // 6 verticies per quad: 3 * 6 = 18
-        let transforms0 = new Float32Array(currentBatch.length * 18);
-        let transforms1 = new Float32Array(currentBatch.length * 18);
-        
-        // 2 texture coordinate values per vertice, 6 verticies
-        // per quad: 2 * 6 = 12
-        let texCoords = new Float32Array(currentBatch.length * 12);
-
         renderbatch.updateBuffers(gl);
 
-        // if(true){
-        //     for(let i = 0, n = currentBatch.length; i < n; i++) {
-        //         for(let j = 0; j < 2; j++) {
-        //             let offset = i * 18 + j * 9;
-
-        //             /*
-        //                 Transformation vector3 layout:
-        //                     1:      2:      3:
-        //                 0:  xPos    yPos    rot
-        //                 1:  alpha   xSize*  ySize*
-
-        //                 *xSize and ySize are the dimensions of the quad
-        //             */
-
-        //             transforms0[offset    ] = currentBatch[i].xLoc;
-        //             transforms0[offset + 1] = currentBatch[i].yLoc;
-        //             transforms0[offset + 2] = currentBatch[i].rot;
-
-        //             transforms0[offset + 3] = currentBatch[i].xLoc;
-        //             transforms0[offset + 4] = currentBatch[i].yLoc;
-        //             transforms0[offset + 5] = currentBatch[i].rot;
-
-        //             transforms0[offset + 6] = currentBatch[i].xLoc;
-        //             transforms0[offset + 7] = currentBatch[i].yLoc;
-        //             transforms0[offset + 8] = currentBatch[i].rot;
-
-        //             transforms1[offset    ] = currentBatch[i].alpha;
-        //             transforms1[offset + 1] = currentBatch[i].xSize;
-        //             transforms1[offset + 2] = currentBatch[i].ySize;
-
-        //             transforms1[offset + 3] = currentBatch[i].alpha;
-        //             transforms1[offset + 4] = currentBatch[i].xSize;
-        //             transforms1[offset + 5] = currentBatch[i].ySize;
-
-        //             transforms1[offset + 6] = currentBatch[i].alpha;
-        //             transforms1[offset + 7] = currentBatch[i].xSize;
-        //             transforms1[offset + 8] = currentBatch[i].ySize;
-        //         }    
-                
-        //         let offset = i * 12;
-
-        //         texCoords[offset     ] = currentBatch[i].sprite[0];
-        //         texCoords[offset + 1 ] = currentBatch[i].sprite[1];
-        //         texCoords[offset + 2 ] = currentBatch[i].sprite[2];
-        //         texCoords[offset + 3 ] = currentBatch[i].sprite[3];
-        //         texCoords[offset + 4 ] = currentBatch[i].sprite[4];
-        //         texCoords[offset + 5 ] = currentBatch[i].sprite[5];
-        //         texCoords[offset + 6 ] = currentBatch[i].sprite[6];
-        //         texCoords[offset + 7 ] = currentBatch[i].sprite[7];
-        //         texCoords[offset + 8 ] = currentBatch[i].sprite[8];
-        //         texCoords[offset + 9 ] = currentBatch[i].sprite[9];
-        //         texCoords[offset + 10] = currentBatch[i].sprite[10];
-        //         texCoords[offset + 11] = currentBatch[i].sprite[11];
-        //     }
-
-        //     // Set buffers for the batch
-        //     gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.vboID);
-        //     gl.enableVertexAttribArray(this.info.aLoc.aVertPos);
-        //     gl.vertexAttribPointer(this.info.aLoc.aVertPos, 2, gl.FLOAT, false, 0, 0);
-
-
-        //     gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.texID);
-        //     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW)  
-
-        //     gl.enableVertexAttribArray(this.info.aLoc.aTexCoord);
-        //     gl.vertexAttribPointer(this.info.aLoc.aTexCoord, 2, gl.FLOAT, false, 0, 0);
-
-            
-        //     gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.transform0ID);
-        //     gl.bufferData(gl.ARRAY_BUFFER, transforms0, gl.STATIC_DRAW)
-
-        //     gl.enableVertexAttribArray(this.info.aLoc.aTransform0);
-        //     gl.vertexAttribPointer(this.info.aLoc.aTransform0, 3, gl.FLOAT, false, 0, 0);
-
-
-
-        //     gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffers.transform1ID);
-        //     gl.bufferData(gl.ARRAY_BUFFER, transforms1, gl.STATIC_DRAW)
-
-        //     gl.enableVertexAttribArray(this.info.aLoc.aTransform1);
-        //     gl.vertexAttribPointer(this.info.aLoc.aTransform1, 3, gl.FLOAT, false, 0, 0);
-        // }
-       
-        
         // Bind textures and canvas resolution for the batch
 
         gl.activeTexture(gl.TEXTURE0);
 
-        gl.bindTexture(gl.TEXTURE_2D, currentBatch[0].texture);
+        gl.bindTexture(gl.TEXTURE_2D, renderbatch.texture);
 
         gl.uniform1i(this.info.uLoc.sampler, 0);
 
@@ -406,7 +289,7 @@ export class Sprite2DRenderer {
 
         // Draw
 
-        gl.drawArrays(gl.TRIANGLES, 0,  currentBatch.length * 6);
+        gl.drawArrays(gl.TRIANGLES, 0,  renderbatch.sprites.length * 6);
 
     }
 }
