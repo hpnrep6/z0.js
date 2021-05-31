@@ -363,4 +363,15 @@ export class RenderBatch {
         sprite._batch = this;
         this.updateGeo = true;
     }
+
+    destroy() {
+        let gl = VAR.gl;
+
+        gl.deleteBuffer(this.buffers.transform);
+        gl.deleteBuffer(this.buffers.size)
+        gl.deleteBuffer(this.buffers.texCoords);
+        gl.deleteBuffer(this.buffers.vertices);
+
+        gl.deleteVertexArray(this.vao);
+    }
 }
