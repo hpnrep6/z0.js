@@ -87,7 +87,7 @@ export function loadSpriteTextureFromImage(gl, image) {
 
     gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, type, image);
 
-    if(VAR.glVersion == VAR.WEBGL_2) gl.generateMipmap(gl.TEXTURE_2D);
+    // if(VAR.glVersion == VAR.WEBGL_2) gl.generateMipmap(gl.TEXTURE_2D);
 
     return texture;
 }

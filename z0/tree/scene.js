@@ -141,5 +141,7 @@ export class Scene {
         }
        
         this.children= [];
+
+        this.glCanvas.destroy();
     }
 }

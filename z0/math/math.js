@@ -5,11 +5,5 @@
  * @param {Number} value 
  */
 export function powerOfTwoRoundedUp(value) {
-    let exp = 0;
-
-    for(; value > 1; value /= 2) {
-        exp++;
-    }
-
-    return exp;
+    return Math.floor(Math.log(value) / Math.log(2)) + 1;
 }

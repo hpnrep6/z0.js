@@ -54,6 +54,7 @@ class Frame {
     }
 
     _createSprite(sprite, image) {
+
         let x = sprite.x / image.width;
         let y = sprite.y / image.height;
         let w = x + sprite.width / image.width;

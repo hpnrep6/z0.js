@@ -120,7 +120,7 @@ export class Sprite2D extends SPRITE.Sprite {
         let h = rawSprite.height / this.imageSize.height;
         let x = rawSprite.x / this.imageSize.width;
         let y = rawSprite.y / this.imageSize.height;
-        
+
         this.sprite = new Float32Array([
             x + w, y + h,
             x + w, y    ,

@@ -81,27 +81,51 @@ export class RenderBatch {
         this.buffers.vertices = gl.createBuffer();
     }
 
-    updateVertices(gl) {
-        let length = powerOfTwoRoundedUp(this.sprites.length);
-        
-       
-        if(length >= this.arrays.verticesArrayLength) {
+    static verticesCache = [];
+
+    static getVerticesCached(power) {
+        if(this.verticesCache[power] == undefined) {
+
+            // Create array and concatanate initial vertices
             let verticesArray = [];
             verticesArray = verticesArray.concat(RenderBatch.defaultVertCoords);
 
-            for(let i = 0; i < length; i++) {
+            for(let i = 0; i < power; i++) {
+                // Duplicate array onto itself; [a, b] -> [a, b, a, b] -> [a, b, a, b, a, b, a, b]
                 verticesArray = verticesArray.concat(verticesArray);
             }
 
-            this.arrays.vertices = new Float32Array(verticesArray);
-            this.arrays.verticesArrayLength = length;
+            // Convert typeof Number array to typeof Float32 array to upload to GPU
+            let array = new Float32Array(verticesArray);
+
+            // Store vertices array in cache array
+            this.verticesCache[power] = array;
+
+            return array;
+
+        } else {
+            // Already cached, return cached array
+            return this.verticesCache[power];
         }
+    }
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.vertices);
-        gl.bufferData(gl.ARRAY_BUFFER, this.arrays.vertices, gl.STATIC_DRAW);
+    updateVertices(gl) {
+        let length = powerOfTwoRoundedUp(this.sprites.length);
 
-        gl.enableVertexAttribArray(this.locations.vertices);
-        gl.vertexAttribPointer(this.locations.vertices, 2, gl.FLOAT, false, 0, 0);
+        // If desired array length is longer than current array, or smaller than two powers of two (2^3 < 2^6 will return true, 2^5 < 2^6 will return false)
+        // Only rebuild array under these conditions
+        if(length >= this.arrays.verticesArrayLength) {
+
+            this.arrays.vertices = RenderBatch.getVerticesCached(length);
+
+            this.arrays.verticesArrayLength = length;
+        
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.vertices);
+            gl.bufferData(gl.ARRAY_BUFFER, this.arrays.vertices, gl.STATIC_DRAW);
+
+            gl.enableVertexAttribArray(this.locations.vertices);
+            gl.vertexAttribPointer(this.locations.vertices, 2, gl.FLOAT, false, 0, 0);
+        } 
     }
 
     updateTransformBuffer(gl) {
@@ -338,5 +362,16 @@ export class RenderBatch {
         this.sprites.push(sprite);
         sprite._batch = this;
         this.updateGeo = true;
+    }
+
+    destroy() {
+        let gl = VAR.gl;
+
+        gl.deleteBuffer(this.buffers.transform);
+        gl.deleteBuffer(this.buffers.size)
+        gl.deleteBuffer(this.buffers.texCoords);
+        gl.deleteBuffer(this.buffers.vertices);
+
+        gl.deleteVertexArray(this.vao);
     }
 }

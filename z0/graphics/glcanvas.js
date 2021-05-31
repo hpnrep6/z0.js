@@ -76,8 +76,8 @@ export class GLCanvas {
         for(let i = 0; i < n; i++) {
             if(sprite.texture === this.sprites[z][i].texture) {
 
-                // Don't add if the number of sprites in this layer has exceeded the maximum allowed sprites per layer
-                if(this.sprites[z][i].sprites.length >= GLCanvas.MAX_SPRITES) continue;
+                // // Don't add if the number of sprites in this layer has exceeded the maximum allowed sprites per layer
+                // if(this.sprites[z][i].sprites.length >= GLCanvas.MAX_SPRITES) continue;
 
                 // Add sprite into sprite array at [zLocition][TextureType]
                 this.sprites[z][i].add(sprite);
@@ -125,6 +125,21 @@ export class GLCanvas {
 
     clearCanvas() {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    }
+
+    /**
+     * Free GPU memory
+     */
+    destroy() {
+        for(let i = 0; i < this.sprites.length; i++) {
+            
+            if(this.sprites[i] !== undefined)
+                for(let j = 0; j < this.sprites[i].length; j++) {
+                    if(this.sprites[i][j] !== undefined) {
+                        this.sprites[i][j].destroy();
+                    }
+                }
+        }
     }
 }
 
