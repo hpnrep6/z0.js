@@ -8,6 +8,7 @@ A 2D Javascript game framework with sprite (textured quad) rendering, scene mang
 - [Cloud Tower Defence](https://github.com/hpnrep6/Cloud-Tower_Defence) 
 - [Fungicide](https://hpnrep6.itch.io/fungicide)
 - [Mandelbrot Fractal Explorer](https://github.com/hpnrep6/MandelbrotFractalExplorer)
+- [Times Safari Inc.](https://github.com/hpnrep6/Time_Safari_inc.)
 
 ## File Structure
 
